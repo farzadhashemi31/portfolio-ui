@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farzad Hashemi — Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0B0E14', panel: '#10141C', panel2: '#161B26',
+          ink: '#C9D3DE', inkdim: 'rgba(201,211,222,.55)', inkfaint: 'rgba(201,211,222,.30)',
+          accent: '#5FD3C4', accent2: '#F2A93B', accent3: '#7C9CFF',
+          border: 'rgba(201,211,222,.14)',
+          tlred: '#FF5F57', tlyellow: '#FEBC2E', tlgreen: '#28C840'
+        },
+        fontFamily: {
+          ui: ['var(--font-ui)'],
+          prose: ['var(--font-body)']
+        },
+        keyframes: {
+          blink: { '50%':{ opacity:'0' } },
+          marquee: { '0%':{transform:'translateX(0)'}, '100%':{transform:'translateX(-50%)'} },
+          floaty: { '0%,100%':{ transform:'translateY(0)' }, '50%':{ transform:'translateY(-6px)' } }
+        },
+        animation: {
+          blink: 'blink 1s step-end infinite',
+          marquee: 'marquee 26s linear infinite',
+          floaty: 'floaty 4s ease-in-out infinite'
+        }
+      }
+    }
+  };
+</script>
+<style type="text/tailwindcss">
+  @layer base {
+    :root{ --font-ui:'JetBrains Mono', monospace; --font-body:'Manrope', sans-serif; }
+    html { @apply bg-bg overflow-x-hidden; max-width: 100vw; }
+    body { @apply bg-bg text-ink font-prose font-normal overflow-x-hidden cursor-auto md:cursor-none; max-width: 100vw; }
+    body.fa { --font-ui:'Vazirmatn', sans-serif; --font-body:'Vazirmatn', sans-serif; }
+    ::selection { @apply bg-accent text-bg; }
+    a { @apply text-inherit no-underline; }
+    img { @apply block w-full h-full object-cover; }
+    section { @apply pt-14 pb-20 md:pt-16 md:pb-28; }
+    .bg-grid { background-image: linear-gradient(rgba(201,211,222,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(201,211,222,.05) 1px, transparent 1px); background-size: 34px 34px; }
+  }
+
+  @layer components {
+    .wrap { @apply max-w-[1200px] mx-auto px-5 md:px-10; }
+
+    .cursor-dot { @apply hidden md:block fixed top-0 left-0 z-[9999] pointer-events-none rounded-full w-1.5 h-1.5 bg-accent -translate-x-1/2 -translate-y-1/2; box-shadow: 0 0 10px 2px rgba(95,211,196,.55); animation: dotpulse 2s ease-in-out infinite; }
+    @keyframes dotpulse { 0%,100%{ box-shadow: 0 0 6px 1px rgba(95,211,196,.4); } 50%{ box-shadow: 0 0 14px 4px rgba(95,211,196,.7); } }
+    .cursor-wrap { @apply hidden md:flex fixed top-0 left-0 z-[9999] pointer-events-none items-center -translate-x-1/2 -translate-y-1/2; }
+    .cursor-bracket { @apply font-ui font-bold text-xl text-inkfaint select-none; animation: cursorbreathe 2.2s ease-in-out infinite; transition: transform .4s cubic-bezier(.34,1.56,.64,1), color .3s ease; }
+    @keyframes cursorbreathe { 0%,100%{ opacity:.45; } 50%{ opacity:1; } }
+    .cursor-bracket-l { transform: translateX(0) rotate(0deg); }
+    .cursor-bracket-r { transform: translateX(0) rotate(0deg); }
+    .cursor-label { @apply font-ui text-[9px] tracking-widest text-accent uppercase opacity-0 transition-opacity duration-200 px-1.5 whitespace-nowrap; }
+    .cursor-wrap.is-hover .cursor-label { @apply opacity-100; }
+    .cursor-wrap.is-hover .cursor-bracket { color: #5FD3C4; }
+    .cursor-wrap.is-hover .cursor-bracket-l { transform: translateX(-9px) rotate(-14deg) scale(1.2); }
+    .cursor-wrap.is-hover .cursor-bracket-r { transform: translateX(9px) rotate(14deg) scale(1.2); }
+
+    .preloader { @apply fixed inset-0 bg-bg z-[10000] flex flex-col items-center justify-center px-6; transition: transform .8s cubic-bezier(.76,0,.24,1); }
+    .preloader.is-done { @apply -translate-y-full; }
+    .preloader-line { @apply font-ui text-sm text-inkdim mb-4; }
+    .preloader-bar-outer { @apply font-ui text-accent text-sm tracking-tight whitespace-nowrap; }
+    .preloader-pct { @apply font-ui text-inkfaint text-xs mt-3; }
+
+    .progress-bar { @apply fixed top-0 left-0 h-[2px] bg-accent z-[60]; width: 0%; }
+
+    .titlebar { @apply fixed top-0 inset-x-0 z-50 bg-bg/90 border-b border-border backdrop-blur; }
+    .titlebar-inner { @apply max-w-[1200px] mx-auto px-5 md:px-10 flex items-center justify-between h-14 md:h-16 gap-3; }
+    .tl-dots { @apply hidden sm:flex items-center gap-1.5 pr-4 mr-1 border-r border-border; }
+    .tl-dot-red { @apply w-2.5 h-2.5 rounded-full bg-tlred/70; }
+    .tl-dot-yellow { @apply w-2.5 h-2.5 rounded-full bg-tlyellow/70; }
+    .tl-dot-green { @apply w-2.5 h-2.5 rounded-full bg-tlgreen/70; }
+    .tl-path { @apply font-ui text-xs text-inkdim whitespace-nowrap overflow-hidden text-ellipsis; }
+    .tl-path span { @apply text-accent; }
+    .tl-tabs { @apply hidden md:flex items-center gap-1 ml-auto mr-4; }
+    .tl-tab { @apply font-ui text-[11px] tracking-wide text-inkdim px-3.5 py-2 rounded-t border-b-2 border-transparent transition-colors duration-200; }
+    .tl-tab:hover { @apply text-ink; }
+    .tl-tab.is-active { @apply text-ink border-accent; }
+    .tl-right { @apply flex items-center gap-3; }
+    .lang-toggle { @apply flex gap-0.5 border border-border rounded p-[3px]; }
+    .lang-btn { @apply font-ui text-[10px] tracking-widest px-2.5 py-1 rounded text-inkfaint transition-all duration-200 cursor-pointer; }
+    .lang-btn.is-active { @apply bg-accent text-bg; }
+    .menu-toggle { @apply flex md:hidden flex-col gap-[5px] w-6 cursor-pointer shrink-0; }
+    .menu-bar { @apply block h-px w-full bg-ink; }
+
+    .mobile-nav { @apply fixed left-0 right-0 top-14 z-40 flex flex-col bg-bg border-b border-border px-5 py-2 md:hidden; transform: translateY(-8px); opacity:0; pointer-events:none; transition: all .3s ease; }
+    .mobile-nav.is-open { transform: translateY(0); opacity:1; pointer-events:auto; }
+    .mobile-nav-link { @apply font-ui text-xs tracking-wide text-inkdim py-3.5 border-b border-border; }
+    .mobile-nav-link:last-child { @apply border-b-0; }
+
+    .hero { @apply relative pt-32 pb-16 md:pt-44 md:pb-24 bg-grid; }
+    .hero-glow { @apply absolute rounded-full pointer-events-none opacity-30 blur-[90px]; width: 420px; height: 420px; background: radial-gradient(circle, #5FD3C4, transparent 70%); top: -80px; right: -80px; }
+    .hero-grid-cols { @apply relative grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-8 items-center; }
+    .hero-eyebrow { @apply font-ui text-xs text-accent mb-4 flex items-center gap-2; }
+    .hero-eyebrow-dot { @apply w-1.5 h-1.5 rounded-full bg-accent animate-pulse; }
+    .hero-name { @apply font-ui font-bold text-4xl sm:text-5xl md:text-6xl lg:text-[64px] leading-[1.05] tracking-tight text-ink opacity-0; transition: opacity .8s ease, transform .8s ease; transform: translateY(10px); }
+    .hero-name.is-in { @apply opacity-100; transform: translateY(0); }
+    .hero-role { @apply font-ui text-base md:text-lg text-inkdim mt-4 min-h-[1.6em]; }
+    .hero-role::after { content:''; @apply inline-block w-[2px] h-[1em] bg-accent align-middle ml-0.5; animation: blink 1s step-end infinite; }
+    .hero-role.is-typed::after { @apply hidden; }
+    .hero-meta { @apply flex flex-wrap items-center gap-2.5 mt-7; }
+    .hero-pill { @apply font-ui text-[11px] tracking-wide border border-border rounded px-3 py-1.5 text-inkdim bg-panel/60; }
+    .hero-pill-live { @apply font-ui text-[11px] tracking-wide rounded px-3 py-1.5 text-accent border border-accent/40 bg-accent/10 flex items-center gap-1.5; }
+    .hero-pill-live-dot { @apply w-1.5 h-1.5 rounded-full bg-accent animate-pulse; }
+
+    .code-window { @apply relative bg-panel border border-border rounded-lg overflow-hidden shadow-2xl animate-floaty; }
+    .code-titlebar { @apply flex items-center gap-2 px-4 py-3 border-b border-border bg-panel2; }
+    .code-filename { @apply font-ui text-[11px] text-inkdim ml-2; }
+    .code-body { @apply p-5 md:p-6 font-ui text-[13px] md:text-sm leading-[1.9] overflow-x-auto; }
+    .code-line { @apply flex gap-4 opacity-0; transform: translateY(6px); transition: opacity .5s ease, transform .5s ease; }
+    .code-line.is-in { @apply opacity-100; transform: translateY(0); }
+    .code-linenum { @apply text-inkfaint select-none w-4 text-right shrink-0; }
+    .syn-key { color: #7C9CFF; }
+    .syn-string { color: #5FD3C4; }
+    .syn-bool { color: #F2A93B; }
+    .syn-punct { @apply text-inkdim; }
+    .syn-plain { @apply text-ink; }
+
+    .log-wrap { @apply border-y border-border overflow-hidden py-2.5 bg-panel/40; }
+    .log-track { @apply flex whitespace-nowrap animate-marquee; width: max-content; }
+    .log-item { @apply font-ui text-[11px] tracking-wide px-6 text-inkfaint flex items-center gap-2; }
+    .log-ok { @apply text-accent; }
+
+    .stats-panel { @apply border border-border rounded-lg bg-panel/50 mt-14 md:mt-20 overflow-hidden; }
+    .stats-panel-head { @apply flex items-center gap-2 px-4 py-3 border-b border-border font-ui text-xs text-inkdim; }
+    .stats-grid { @apply grid grid-cols-2 md:grid-cols-4; }
+    .stat { @apply px-5 py-6 md:py-7 border-t border-border md:border-t-0 md:border-l first:border-l-0 first:md:border-l-0; }
+    .stat:nth-child(-n+2) { @apply border-t-0; }
+    html[dir="rtl"] .stat { border-left: none; }
+    html[dir="rtl"] .stat:not(:first-child) { border-right: 1px solid rgba(201,211,222,.14); }
+    .stat-top { @apply font-ui font-bold text-2xl sm:text-3xl md:text-4xl text-ink flex items-baseline gap-1; }
+    .stat-plus { @apply text-accent not-italic text-lg; }
+    .stat-label { @apply font-ui text-[10px] md:text-[11px] tracking-wide text-inkdim mt-1.5; }
+
+    .section-comment { @apply font-ui text-sm text-inkfaint mb-2; }
+    .section-comment span { @apply text-accent; }
+    .section-head { @apply flex justify-between items-end mb-10 md:mb-12 flex-wrap gap-5; }
+    .section-title { @apply font-ui font-bold text-3xl sm:text-4xl md:text-[44px] text-ink tracking-tight; }
+
+    .tabs { @apply flex gap-2 flex-wrap; }
+    .tab { @apply font-ui text-[11px] tracking-wide px-3.5 py-2 border border-border rounded text-inkdim transition-all duration-300 bg-transparent cursor-pointer; }
+    .tab::before { content:'--'; @apply text-inkfaint mr-0.5; }
+    .tab.is-active, .tab:hover { @apply border-accent text-ink; background: rgba(95,211,196,.08); }
+
+    .repo-list { @apply flex flex-col border border-border rounded-lg overflow-hidden; }
+    .repo-item { transition: opacity .4s ease, transform .4s ease, max-height .4s ease; }
+    .repo-item.is-hidden { @apply opacity-0 pointer-events-none absolute; transform: scale(.97); }
+    .repo-row { @apply flex items-center gap-4 px-4 md:px-6 py-5 border-b border-border cursor-pointer transition-colors duration-200; }
+    .repo-item:last-child .repo-row { @apply border-b-0; }
+    .repo-row:hover { background: rgba(95,211,196,.05); }
+    .repo-lang-dot { @apply w-2.5 h-2.5 rounded-full shrink-0; }
+    .repo-lang-dot.cat-frontend { @apply bg-accent; }
+    .repo-lang-dot.cat-backend { @apply bg-accent2; }
+    .repo-lang-dot.cat-fullstack { @apply bg-accent3; }
+    .repo-main { @apply flex-1 min-w-0; }
+    .repo-name { @apply font-ui font-semibold text-sm md:text-base text-ink; }
+    .repo-desc { @apply font-prose text-xs md:text-sm text-inkdim mt-1 truncate; }
+    .repo-tags { @apply hidden md:flex gap-1.5 shrink-0; }
+    .repo-tag { @apply font-ui text-[10px] tracking-wide border border-border rounded px-2 py-1 text-inkfaint; }
+    .repo-arrow { @apply font-ui text-inkfaint text-lg shrink-0 transition-transform duration-300; }
+    .repo-row:hover .repo-arrow { @apply text-accent; transform: translateX(4px); }
+    html[dir="rtl"] .repo-row:hover .repo-arrow { transform: translateX(-4px); }
+
+    .repo-overlay { @apply fixed inset-0 z-[190] opacity-0 pointer-events-none transition-opacity duration-300; background: rgba(4,5,7,.7); }
+    .repo-overlay.is-open { @apply opacity-100 pointer-events-auto; }
+    .repo-panel { @apply fixed top-0 right-0 z-[200] h-full w-full max-w-[460px] bg-panel border-l border-border overflow-y-auto; transform: translateX(100%); transition: transform .45s cubic-bezier(.16,1,.3,1); }
+    .repo-panel.is-open { transform: translateX(0); }
+    html[dir="rtl"] .repo-panel { right: auto; left: 0; border-left: none; border-right: 1px solid rgba(201,211,222,.14); transform: translateX(-100%); }
+    html[dir="rtl"] .repo-panel.is-open { transform: translateX(0); }
+    .repo-panel-head { @apply flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-panel z-10; }
+    .repo-panel-path { @apply font-ui text-xs text-inkdim; }
+    .repo-panel-close { @apply font-ui text-2xl text-inkdim leading-none cursor-pointer bg-transparent border-0; }
+    .repo-panel-thumb { @apply aspect-[16/9] overflow-hidden bg-bg; }
+    .repo-panel-thumb img { filter: grayscale(35%) contrast(1.05) brightness(.75) saturate(1.1); }
+    .repo-panel-body { @apply p-5 md:p-6; }
+    .repo-panel-cat { @apply font-ui text-[11px] tracking-wide uppercase text-accent; }
+    .repo-panel-title { @apply font-ui font-bold text-2xl text-ink mt-2 mb-4; }
+    .repo-panel-stack { @apply flex flex-wrap gap-1.5 mb-5; }
+    .repo-panel-desc { @apply font-prose text-sm text-inkdim leading-relaxed min-h-[6em]; }
+    .repo-panel-desc::after { content:''; @apply inline-block w-[2px] h-[1em] bg-accent align-middle ml-0.5; animation: blink 1s step-end infinite; }
+    .repo-panel-desc.is-typed::after { @apply hidden; }
+
+    .skills-grid { @apply grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6; }
+    .skillcard { @apply bg-panel/50 border border-border rounded-lg overflow-hidden; }
+    .skillcard-head { @apply font-ui text-xs text-inkdim px-5 py-3 border-b border-border; }
+    .skillcard-head span { @apply text-accent; }
+    .skillcard-body { @apply p-5; }
+    .skill-row { @apply mb-4; }
+    .skill-row:last-child { @apply mb-0; }
+    .skill-top { @apply flex justify-between font-ui text-xs text-inkdim mb-1.5; }
+    .skill-pct { @apply text-ink; }
+    .skill-segs { @apply flex gap-[3px]; }
+    .skill-seg { @apply h-2 flex-1 rounded-[1px] bg-border; transition: background .35s ease; }
+    .skill-seg.is-lit { @apply bg-accent; }
+
+    .about-wrap { @apply grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8 md:gap-14 items-start; }
+    .about-avatar { @apply w-[160px] md:w-[220px] mx-auto md:mx-0; }
+    .about-avatar-img { @apply aspect-square overflow-hidden rounded-lg border border-border; }
+    .about-avatar-img img { filter: grayscale(45%) contrast(1.05) brightness(.85); }
+    .about-avatar-cap { @apply font-ui text-[10px] text-inkfaint mt-2 text-center md:text-left flex justify-between; }
+    html[dir="rtl"] .about-avatar-cap { text-align: right; }
+    .about-p { @apply font-prose text-[15px] md:text-base leading-[1.85] text-inkdim mb-4; }
+    .inline-code { @apply font-ui text-[13px] text-accent bg-accent/10 border border-accent/20 rounded px-1.5 py-0.5; }
+    .taglist { @apply flex flex-wrap gap-2 mt-6; }
+    .tag-pill { @apply font-ui text-[11px] tracking-wide border border-border rounded px-3 py-1.5 text-inkdim; }
+
+    .cta-wrap { @apply max-w-[640px] mx-auto text-center; }
+    .cta-terminal { @apply flex items-center gap-2 border border-border rounded-lg bg-panel/60 px-5 py-4 md:py-5 font-ui text-sm md:text-base transition-all duration-300 cursor-pointer; }
+    .cta-terminal:hover { @apply border-accent; background: rgba(95,211,196,.06); }
+    .cta-prompt { @apply text-accent shrink-0; }
+    .cta-command { @apply text-ink; }
+    .cta-command::after { content:''; @apply inline-block w-[2px] h-[1em] bg-accent align-middle ml-0.5; animation: blink 1s step-end infinite; }
+    .cta-sub { @apply mt-6 font-ui text-xs text-inkdim; }
+    .cta-sub span { @apply text-accent; }
+
+    .statusbar { @apply border-t border-border bg-panel; }
+    .statusbar-inner { @apply max-w-[1200px] mx-auto px-5 md:px-10 py-2.5 flex items-center justify-between font-ui text-[11px] text-inkdim flex-wrap gap-2; }
+    .status-item { @apply flex items-center gap-1.5; }
+    .status-item span { @apply text-accent; }
+  }
+</style>
+</head>
+<body class="site-body">
+
+<div class="cursor-wrap" id="cursorWrap">
+  <span class="cursor-bracket cursor-bracket-l">[</span>
+  <span class="cursor-label" id="cursorLabel"></span>
+  <span class="cursor-bracket cursor-bracket-r">]</span>
+</div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<div id="preloader" class="preloader">
+  <div class="preloader-line" data-en="$ npm run build" data-fa="$ npm run build">$ npm run build</div>
+  <div id="preBar" class="preloader-bar-outer">[----------] 0%</div>
+  <div class="preloader-pct" data-en="compiling portfolio.tsx" data-fa="در حال کامپایل پرتفولیو">compiling portfolio.tsx</div>
+</div>
+
+<div id="progress" class="progress-bar"></div>
+
+<header class="titlebar">
+  <div class="titlebar-inner">
+    <div class="tl-dots"><span class="tl-dot-red"></span><span class="tl-dot-yellow"></span><span class="tl-dot-green"></span></div>
+    <div class="tl-path">~/farzad-hashemi/<span>portfolio.tsx</span></div>
+    <nav class="tl-tabs">
+      <a href="#projects" data-hover class="tl-tab" data-en="Projects" data-fa="پروژه‌ها">Projects</a>
+      <a href="#skills" data-hover class="tl-tab" data-en="Skills" data-fa="مهارت‌ها">Skills</a>
+      <a href="#about" data-hover class="tl-tab" data-en="About" data-fa="درباره">About</a>
+      <a href="#contact" data-hover class="tl-tab" data-en="Contact" data-fa="تماس">Contact</a>
+    </nav>
+    <div class="tl-right">
+      <div class="lang-toggle">
+        <button data-lang="en" class="lang-btn is-active" data-hover>EN</button>
+        <button data-lang="fa" class="lang-btn" data-hover>FA</button>
+      </div>
+      <button id="menuToggle" class="menu-toggle" aria-label="Menu">
+        <span class="menu-bar"></span><span class="menu-bar"></span><span class="menu-bar"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div id="mobileNav" class="mobile-nav">
+  <a href="#projects" data-hover class="mobile-nav-link" data-en="Projects" data-fa="پروژه‌ها">Projects</a>
+  <a href="#skills" data-hover class="mobile-nav-link" data-en="Skills" data-fa="مهارت‌ها">Skills</a>
+  <a href="#about" data-hover class="mobile-nav-link" data-en="About" data-fa="درباره">About</a>
+  <a href="#contact" data-hover class="mobile-nav-link" data-en="Contact" data-fa="تماس">Contact</a>
+</div>
+
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap hero-grid-cols">
+    <div>
+      <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span><span data-en="Available for new projects" data-fa="آماده‌ی همکاری روی پروژه‌ی جدید">Available for new projects</span></div>
+      <h1 id="heroName" class="hero-name">Farzad Hashemi</h1>
+      <div id="heroRole" class="hero-role" data-en="Full-stack Developer — C# · ASP.NET Core · React" data-fa="برنامه‌نویس فول‌استک — سی‌شارپ · ای‌اس‌پی‌نت‌کور · ری‌اکت"></div>
+      <div class="hero-meta">
+        <span class="hero-pill-live"><span class="hero-pill-live-dot"></span><span data-en="Tehran, Iran" data-fa="تهران، ایران">Tehran, Iran</span></span>
+        <span class="hero-pill">C#</span>
+        <span class="hero-pill">ASP.NET Core</span>
+        <span class="hero-pill">React</span>
+        <span class="hero-pill">SQL Server</span>
+      </div>
+    </div>
+    <div class="code-window" data-hover>
+      <div class="code-titlebar">
+        <span class="tl-dot-red"></span><span class="tl-dot-yellow"></span><span class="tl-dot-green"></span>
+        <span class="code-filename">developer.ts</span>
+      </div>
+      <div class="code-body" id="codeBody">
+        <div class="code-line"><span class="code-linenum">1</span><span><span class="syn-key">const</span> <span class="syn-plain">developer</span> <span class="syn-punct">= {</span></span></div>
+        <div class="code-line"><span class="code-linenum">2</span><span>&nbsp;&nbsp;<span class="syn-key">name</span><span class="syn-punct">:</span> <span class="syn-string">"Farzad Hashemi"</span><span class="syn-punct">,</span></span></div>
+        <div class="code-line"><span class="code-linenum">3</span><span>&nbsp;&nbsp;<span class="syn-key">role</span><span class="syn-punct">:</span> <span class="syn-string">"Full-stack Developer"</span><span class="syn-punct">,</span></span></div>
+        <div class="code-line"><span class="code-linenum">4</span><span>&nbsp;&nbsp;<span class="syn-key">stack</span><span class="syn-punct">:</span> <span class="syn-punct">[</span><span class="syn-string">"C#"</span><span class="syn-punct">,</span> <span class="syn-string">"ASP.NET Core"</span><span class="syn-punct">,</span> <span class="syn-string">"React"</span><span class="syn-punct">],</span></span></div>
+        <div class="code-line"><span class="code-linenum">5</span><span>&nbsp;&nbsp;<span class="syn-key">location</span><span class="syn-punct">:</span> <span class="syn-string">"Tehran, Iran"</span><span class="syn-punct">,</span></span></div>
+        <div class="code-line"><span class="code-linenum">6</span><span>&nbsp;&nbsp;<span class="syn-key">available</span><span class="syn-punct">:</span> <span class="syn-bool">true</span></span></div>
+        <div class="code-line"><span class="code-linenum">7</span><span class="syn-punct">};</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="log-wrap">
+  <div class="log-track">
+    <span class="log-item"><span class="log-ok">[ok]</span> C#</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> ASP.NET Core</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> EF Core</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> SQL Server</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Docker</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Git &amp; GitHub</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Tailwind CSS</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> JavaScript</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> C#</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> ASP.NET Core</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> EF Core</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> SQL Server</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Docker</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Git &amp; GitHub</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> Tailwind CSS</span>
+    <span class="log-item"><span class="log-ok">[ok]</span> JavaScript</span>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="stats-panel">
+    <div class="stats-panel-head">$ git log --stat --summary</div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-top"><span data-count="3">0</span><span class="stat-plus">+</span></div><div class="stat-label" data-en="Years of experience" data-fa="سال تجربه">Years of experience</div></div>
+      <div class="stat"><div class="stat-top"><span data-count="25">0</span><span class="stat-plus">+</span></div><div class="stat-label" data-en="Projects completed" data-fa="پروژه تکمیل‌شده">Projects completed</div></div>
+      <div class="stat"><div class="stat-top"><span data-count="10">0</span><span class="stat-plus">+</span></div><div class="stat-label" data-en="Core technologies" data-fa="تکنولوژی اصلی">Core technologies</div></div>
+      <div class="stat"><div class="stat-top"><span data-count="40">0</span><span class="stat-plus">+</span></div><div class="stat-label" data-en="GitHub repositories" data-fa="ریپازیتوری گیت‌هاب">GitHub repositories</div></div>
+    </div>
+  </div>
+
+  <section id="projects">
+    <div class="section-comment"><span>//</span> <span data-en="02 — Featured work" data-fa="۰۲ — کارهای منتخب">02 — Featured work</span></div>
+    <div class="section-head">
+      <h2 class="section-title" data-en="Projects" data-fa="پروژه‌ها">Projects</h2>
+      <div class="tabs">
+        <button class="tab is-active" data-filter="all" data-hover data-en="all" data-fa="همه">all</button>
+        <button class="tab" data-filter="frontend" data-hover data-en="frontend" data-fa="فرانت‌اند">frontend</button>
+        <button class="tab" data-filter="backend" data-hover data-en="backend" data-fa="بک‌اند">backend</button>
+        <button class="tab" data-filter="fullstack" data-hover data-en="fullstack" data-fa="فول‌استک">fullstack</button>
+      </div>
+    </div>
+    <div class="repo-list" id="repoList">
+      <div class="repo-item" data-cat="backend">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/1/900/500" data-cat-label-en="Backend" data-cat-label-fa="بک‌اند" data-stack="ASP.NET Core, EF Core, SQL Server" data-desc-en="A RESTful API for an e-commerce platform handling products, orders and inventory, with JWT auth and role-based access control." data-desc-fa="یک API ریستفول برای یک پلتفرم فروشگاهی که محصولات، سفارش‌ها و موجودی رو مدیریت می‌کنه، با احراز هویت JWT و کنترل دسترسی نقش‌محور.">
+          <span class="repo-lang-dot cat-backend"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="ecommerce-api" data-fa="ecommerce-api">ecommerce-api</div>
+            <div class="repo-desc" data-en="RESTful API for an e-commerce platform — products, orders, inventory, JWT auth." data-fa="API ریستفول برای پلتفرم فروشگاهی — محصولات، سفارش‌ها، موجودی، احراز هویت JWT.">RESTful API for an e-commerce platform — products, orders, inventory, JWT auth.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">ASP.NET Core</span><span class="repo-tag">SQL Server</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+      <div class="repo-item" data-cat="fullstack">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/20/900/500" data-cat-label-en="Full-stack" data-cat-label-fa="فول‌استک" data-stack="React, ASP.NET Core, SQL Server" data-desc-en="A team task manager with boards, due dates and real-time status updates — React front-end backed by an ASP.NET Core API." data-desc-fa="یک ابزار مدیریت وظایف تیمی با بورد، ددلاین و آپدیت وضعیت لحظه‌ای — فرانت‌اند ری‌اکت با بک‌اند ای‌اس‌پی‌نت‌کور.">
+          <span class="repo-lang-dot cat-fullstack"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="task-manager" data-fa="task-manager">task-manager</div>
+            <div class="repo-desc" data-en="Team task manager with boards, due dates and live status updates." data-fa="ابزار مدیریت وظایف تیمی با بورد، ددلاین و آپدیت لحظه‌ای وضعیت.">Team task manager with boards, due dates and live status updates.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">React</span><span class="repo-tag">ASP.NET Core</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+      <div class="repo-item" data-cat="frontend">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/48/900/500" data-cat-label-en="Frontend" data-cat-label-fa="فرانت‌اند" data-stack="HTML, Tailwind CSS, JavaScript" data-desc-en="A lightweight content dashboard for editing a portfolio site's pages and media, built with plain JS and Tailwind." data-desc-fa="یک داشبورد مدیریت محتوای سبک برای ویرایش صفحات و رسانه‌های یک سایت پرتفولیو، ساخته‌شده با جاوااسکریپت خالص و Tailwind.">
+          <span class="repo-lang-dot cat-frontend"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="portfolio-cms" data-fa="portfolio-cms">portfolio-cms</div>
+            <div class="repo-desc" data-en="Lightweight content dashboard for editing a portfolio site's pages." data-fa="داشبورد مدیریت محتوای سبک برای ویرایش صفحات یک سایت پرتفولیو.">Lightweight content dashboard for editing a portfolio site's pages.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">Tailwind</span><span class="repo-tag">JS</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+      <div class="repo-item" data-cat="backend">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/60/900/500" data-cat-label-en="Backend" data-cat-label-fa="بک‌اند" data-stack="C#, EF Core, Docker" data-desc-en="A warehouse inventory system tracking stock across multiple locations, containerized with Docker for easy deployment." data-desc-fa="یک سیستم مدیریت موجودی انبار که موجودی رو در چند شعبه ردیابی می‌کنه، با Docker برای دیپلوی راحت‌تر کانتینری شده.">
+          <span class="repo-lang-dot cat-backend"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="inventory-system" data-fa="inventory-system">inventory-system</div>
+            <div class="repo-desc" data-en="Warehouse inventory system tracking stock across multiple locations." data-fa="سیستم مدیریت موجودی انبار در چند شعبه.">Warehouse inventory system tracking stock across multiple locations.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">C#</span><span class="repo-tag">Docker</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+      <div class="repo-item" data-cat="fullstack">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/96/900/500" data-cat-label-en="Full-stack" data-cat-label-fa="فول‌استک" data-stack="SignalR, ASP.NET Core, React" data-desc-en="A real-time chat application with typing indicators and read receipts, powered by SignalR over WebSockets." data-desc-fa="یک اپلیکیشن چت لحظه‌ای با نمایش در حال تایپ و رسید خوانده‌شدن، با SignalR روی وب‌سوکت.">
+          <span class="repo-lang-dot cat-fullstack"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="realtime-chat" data-fa="realtime-chat">realtime-chat</div>
+            <div class="repo-desc" data-en="Real-time chat app with typing indicators and read receipts." data-fa="اپلیکیشن چت لحظه‌ای با نمایش در حال تایپ و رسید خوانده‌شدن.">Real-time chat app with typing indicators and read receipts.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">SignalR</span><span class="repo-tag">React</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+      <div class="repo-item" data-cat="frontend">
+        <div class="repo-row" data-hover data-img="https://picsum.photos/id/119/900/500" data-cat-label-en="Frontend" data-cat-label-fa="فرانت‌اند" data-stack="JavaScript, Tailwind CSS, Chart.js" data-desc-en="A metrics dashboard visualizing API response times and error rates, with live-updating charts." data-desc-fa="یک داشبورد متریک برای نمایش زمان پاسخ API و نرخ خطا، با نمودارهایی که لحظه‌ای آپدیت می‌شن.">
+          <span class="repo-lang-dot cat-frontend"></span>
+          <div class="repo-main">
+            <div class="repo-name" data-en="dev-dashboard" data-fa="dev-dashboard">dev-dashboard</div>
+            <div class="repo-desc" data-en="Metrics dashboard visualizing API response times and error rates." data-fa="داشبورد متریک برای زمان پاسخ API و نرخ خطا.">Metrics dashboard visualizing API response times and error rates.</div>
+          </div>
+          <div class="repo-tags"><span class="repo-tag">Chart.js</span><span class="repo-tag">JS</span></div>
+          <span class="repo-arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="repo-overlay" id="repoOverlay"></div>
+  <aside class="repo-panel" id="repoPanel">
+    <div class="repo-panel-head">
+      <span id="repoPanelPath" class="repo-panel-path">~/projects/</span>
+      <button id="repoPanelClose" class="repo-panel-close" data-hover>&times;</button>
+    </div>
+    <div class="repo-panel-thumb"><img id="repoPanelImg" src="" alt=""></div>
+    <div class="repo-panel-body">
+      <div id="repoPanelCat" class="repo-panel-cat"></div>
+      <h3 id="repoPanelTitle" class="repo-panel-title"></h3>
+      <div id="repoPanelStack" class="repo-panel-stack"></div>
+      <p id="repoPanelDesc" class="repo-panel-desc"></p>
+    </div>
+  </aside>
+
+  <section id="skills">
+    <div class="section-comment"><span>//</span> <span data-en="03 — Proficiency" data-fa="۰۳ — سطح مهارت">03 — Proficiency</span></div>
+    <div class="section-head"><h2 class="section-title" data-en="Skills" data-fa="مهارت‌ها">Skills</h2></div>
+    <div class="skills-grid">
+      <div class="skillcard">
+        <div class="skillcard-head">$ cat <span data-en="skills/frontend.json" data-fa="skills/frontend.json">skills/frontend.json</span></div>
+        <div class="skillcard-body">
+          <div class="skill-row"><div class="skill-top"><span>HTML</span><span class="skill-pct"><span data-count="90">0</span>%</span></div><div class="skill-segs" data-target="9">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>CSS</span><span class="skill-pct"><span data-count="85">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>Tailwind CSS</span><span class="skill-pct"><span data-count="85">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>JavaScript</span><span class="skill-pct"><span data-count="80">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+        </div>
+      </div>
+      <div class="skillcard">
+        <div class="skillcard-head">$ cat <span data-en="skills/backend.json" data-fa="skills/backend.json">skills/backend.json</span></div>
+        <div class="skillcard-body">
+          <div class="skill-row"><div class="skill-top"><span>C#</span><span class="skill-pct"><span data-count="90">0</span>%</span></div><div class="skill-segs" data-target="9">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>ASP.NET Core</span><span class="skill-pct"><span data-count="85">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>EF Core</span><span class="skill-pct"><span data-count="80">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>Web API</span><span class="skill-pct"><span data-count="85">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+        </div>
+      </div>
+      <div class="skillcard">
+        <div class="skillcard-head">$ cat <span data-en="skills/tools.json" data-fa="skills/tools.json">skills/tools.json</span></div>
+        <div class="skillcard-body">
+          <div class="skill-row"><div class="skill-top"><span>Git / GitHub</span><span class="skill-pct"><span data-count="85">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>Docker</span><span class="skill-pct"><span data-count="70">0</span>%</span></div><div class="skill-segs" data-target="7">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>SQL Server</span><span class="skill-pct"><span data-count="80">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+          <div class="skill-row"><div class="skill-top"><span>SQLite</span><span class="skill-pct"><span data-count="75">0</span>%</span></div><div class="skill-segs" data-target="8">
+            <i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i><i class="skill-seg"></i>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-comment"><span>//</span> <span data-en="04 — About" data-fa="۰۴ — درباره">04 — About</span></div>
+    <div class="section-head"><h2 class="section-title" data-en="Who I am" data-fa="من کی‌ام">Who I am</h2></div>
+    <div class="about-wrap">
+      <div class="about-avatar">
+        <div class="about-avatar-img" data-hover><img src="https://picsum.photos/id/160/400/400" alt=""></div>
+        <div class="about-avatar-cap"><span>farzad.jpg</span><span>240kb</span></div>
+      </div>
+      <div class="about-text">
+        <p class="about-p" data-en="I'm Farzad Hashemi, a full-stack developer who builds reliable, well-structured web applications — from pixel-accurate interfaces down to the APIs and databases running behind them." data-fa="من فرزاد هاشمی‌ام، یه برنامه‌نویس فول‌استک که اپلیکیشن‌های وب قابل‌اعتماد و ساختاریافته می‌سازه — از رابط‌های کاربری دقیق تا API و دیتابیس‌هایی که پشت صحنه کار می‌کنن.">I'm Farzad Hashemi, a full-stack developer who builds reliable, well-structured web applications — from pixel-accurate interfaces down to the APIs and databases running behind them.</p>
+        <p class="about-p">My main stack is <span class="inline-code">C#</span> and <span class="inline-code">ASP.NET Core</span> on the back-end with <span class="inline-code">EF Core</span> and <span class="inline-code">SQL Server</span>, paired with <span class="inline-code">HTML</span>, <span class="inline-code">Tailwind</span> and <span class="inline-code">JavaScript</span> on the front-end.</p>
+        <p class="about-p" data-en="I care about clean architecture, readable code and shipping things that actually hold up in production." data-fa="برام معماری تمیز، کد خوانا و تحویل چیزی که واقعاً توی پروداکشن جواب بده مهمه.">I care about clean architecture, readable code and shipping things that actually hold up in production.</p>
+        <div class="taglist">
+          <span class="tag-pill" data-en="Problem solver" data-fa="حل‌کننده‌ مسئله">Problem solver</span>
+          <span class="tag-pill" data-en="Clean code" data-fa="کد تمیز">Clean code</span>
+          <span class="tag-pill" data-en="Fast learner" data-fa="یادگیری سریع">Fast learner</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-comment" style="text-align:center"><span>//</span> <span data-en="05 — Contact" data-fa="۰۵ — تماس">05 — Contact</span></div>
+    <div class="cta-wrap">
+      <h2 class="section-title" style="margin-bottom:2rem" data-en="Let's build something" data-fa="بیا یه چیزی بسازیم">Let's build something</h2>
+      <a href="mailto:farzad.hashemi.dev@gmail.com" class="cta-terminal" data-hover>
+        <span class="cta-prompt">$</span>
+        <span id="ctaCommand" class="cta-command"></span>
+      </a>
+      <p class="cta-sub">farzad.hashemi.dev@gmail.com — <span data-en="Iran" data-fa="ایران">Iran</span></p>
+    </div>
+  </section>
+</main>
+
+<footer class="statusbar">
+  <div class="statusbar-inner">
+    <div class="status-item"><span>⎇</span> main</div>
+    <div class="status-item">UTF-8</div>
+    <div class="status-item" id="clock">Tehran 00:00:00</div>
+    <div class="status-item">© 2026 Farzad Hashemi</div>
+  </div>
+</footer>
+
+<script>
+  let currentLang = 'en';
+
+  const preBar = document.getElementById('preBar');
+  const preloader = document.getElementById('preloader');
+  let pct = 0;
+  const loadTimer = setInterval(()=>{
+    pct += Math.floor(Math.random()*10)+5;
+    if(pct>=100){ pct=100; clearInterval(loadTimer);
+      setTimeout(()=>{
+        preloader.classList.add('is-done');
+        document.getElementById('heroName').classList.add('is-in');
+        setTimeout(()=>{
+          const hr = document.getElementById('heroRole');
+          typewriteInto(hr, currentLang==='fa' ? hr.getAttribute('data-fa') : hr.getAttribute('data-en'), 26);
+        }, 300);
+        setTimeout(revealCodeLines, 500);
+      }, 300);
+    }
+    const filled = Math.round(pct/10);
+    preBar.textContent = '['+'#'.repeat(filled)+'-'.repeat(10-filled)+'] '+pct+'%';
+  }, 100);
+
+  function revealCodeLines(){
+    document.querySelectorAll('#codeBody .code-line').forEach((l,i)=>{
+      setTimeout(()=> l.classList.add('is-in'), i*140);
+    });
+  }
+
+  function typewriteInto(el, text, speed){
+    clearInterval(el._typeTimer);
+    el.textContent = '';
+    el.classList.remove('is-typed');
+    let i = 0;
+    el._typeTimer = setInterval(()=>{
+      el.textContent = (text||'').slice(0, i+1);
+      i++;
+      if(i >= (text||'').length){ clearInterval(el._typeTimer); el.classList.add('is-typed'); }
+    }, speed || 22);
+  }
+
+  const ctaCommand = document.getElementById('ctaCommand');
+  let ctaTyped = false;
+  const ioCta = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && !ctaTyped){
+        ctaTyped = true;
+        typewriteInto(ctaCommand, 'send-message --to=farzad', 30);
+      }
+    });
+  }, { threshold:.6 });
+  ioCta.observe(ctaCommand);
+
+  function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function smoothScrollTo(target){
+    const headerOffset = 76;
+    const startY = window.pageYOffset;
+    const targetY = target.getBoundingClientRect().top + startY - headerOffset;
+    const distance = targetY - startY;
+    const duration = Math.min(1200, Math.max(500, Math.abs(distance)*0.6));
+    let startTime = null;
+    function step(ts){
+      if(!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const progress = Math.min(elapsed/duration, 1);
+      window.scrollTo(0, startY + distance*easeInOutCubic(progress));
+      if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(link=>{
+    link.addEventListener('click', (e)=>{
+      const id = link.getAttribute('href');
+      const target = document.querySelector(id);
+      if(target){ e.preventDefault(); smoothScrollTo(target); }
+    });
+  });
+
+  const dotEl = document.getElementById('cursorDot');
+  const cursorWrap = document.getElementById('cursorWrap');
+  const cursorLabel = document.getElementById('cursorLabel');
+  let mx=0,my=0,rx=0,ry=0;
+  window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; dotEl.style.left=mx+'px'; dotEl.style.top=my+'px'; });
+  function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; cursorWrap.style.left=rx+'px'; cursorWrap.style.top=ry+'px'; requestAnimationFrame(loop); }
+  loop();
+  document.querySelectorAll('[data-hover]').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{
+      cursorWrap.classList.add('is-hover');
+      if(el.classList.contains('repo-row')){
+        cursorLabel.textContent = currentLang==='fa' ? 'باز کردن' : 'OPEN';
+      } else { cursorLabel.textContent = ''; }
+    });
+    el.addEventListener('mouseleave', ()=>{ cursorWrap.classList.remove('is-hover'); cursorLabel.textContent=''; });
+  });
+
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', ()=>{
+    const h = document.documentElement;
+    progress.style.width = ((h.scrollTop)/(h.scrollHeight-h.clientHeight)*100)+'%';
+  });
+
+  function animateCount(el){
+    const target = parseInt(el.getAttribute('data-count'));
+    const dur = 1300; const start = performance.now();
+    function step(t){
+      const p = Math.min((t-start)/dur,1);
+      el.textContent = Math.floor(p*target);
+      if(p<1) requestAnimationFrame(step); else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  }
+  const ioCount = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ animateCount(e.target); ioCount.unobserve(e.target); } });
+  }, { threshold:.5 });
+  document.querySelectorAll('[data-count]').forEach(c=>ioCount.observe(c));
+
+  const ioSkill = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const target = parseInt(e.target.getAttribute('data-target'));
+        const segs = e.target.querySelectorAll('.skill-seg');
+        segs.forEach((s,i)=> setTimeout(()=>{ if(i<target) s.classList.add('is-lit'); }, i*60));
+        ioSkill.unobserve(e.target);
+      }
+    });
+  }, { threshold:.4 });
+  document.querySelectorAll('.skill-segs').forEach(s=>ioSkill.observe(s));
+
+  const tlTabs = document.querySelectorAll('.tl-tab');
+  const secIds = ['#projects','#skills','#about','#contact'];
+  const secElsNav = secIds.map(s=>document.querySelector(s)).filter(Boolean);
+  const ioNav = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const idx = secElsNav.indexOf(e.target);
+        tlTabs.forEach(t=>t.classList.remove('is-active'));
+        if(tlTabs[idx]) tlTabs[idx].classList.add('is-active');
+      }
+    });
+  }, { threshold:.4 });
+  secElsNav.forEach(s=>ioNav.observe(s));
+
+  const tabs = document.querySelectorAll('.tab');
+  const items = document.querySelectorAll('.repo-item');
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      const f = tab.getAttribute('data-filter');
+      items.forEach(it=>{
+        const match = f==='all' || it.getAttribute('data-cat')===f;
+        it.classList.toggle('is-hidden', !match);
+      });
+    });
+  });
+
+  const repoPanel = document.getElementById('repoPanel');
+  const repoOverlay = document.getElementById('repoOverlay');
+  const rpImg = document.getElementById('repoPanelImg');
+  const rpCat = document.getElementById('repoPanelCat');
+  const rpTitle = document.getElementById('repoPanelTitle');
+  const rpStack = document.getElementById('repoPanelStack');
+  const rpDesc = document.getElementById('repoPanelDesc');
+  const rpPath = document.getElementById('repoPanelPath');
+
+  function openRepo(row){
+    const name = row.querySelector('.repo-name').textContent;
+    const cat = currentLang==='fa' ? row.getAttribute('data-cat-label-fa') : row.getAttribute('data-cat-label-en');
+    const desc = currentLang==='fa' ? row.getAttribute('data-desc-fa') : row.getAttribute('data-desc-en');
+    const stack = (row.getAttribute('data-stack')||'').split(',').map(s=>s.trim()).filter(Boolean);
+    rpImg.src = row.getAttribute('data-img');
+    rpCat.textContent = cat;
+    rpTitle.textContent = name;
+    rpPath.textContent = '~/projects/'+name;
+    rpStack.innerHTML = stack.map(s=>`<span class="tag-pill">${s}</span>`).join('');
+    repoPanel.classList.add('is-open');
+    repoOverlay.classList.add('is-open');
+    typewriteInto(rpDesc, desc || '', 18);
+  }
+  function closeRepo(){
+    repoPanel.classList.remove('is-open');
+    repoOverlay.classList.remove('is-open');
+    clearInterval(rpDesc._typeTimer);
+  }
+  document.querySelectorAll('.repo-row').forEach(row=> row.addEventListener('click', ()=> openRepo(row)));
+  document.getElementById('repoPanelClose').addEventListener('click', closeRepo);
+  repoOverlay.addEventListener('click', closeRepo);
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeRepo(); });
+
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  menuToggle.addEventListener('click', ()=> mobileNav.classList.toggle('is-open'));
+  document.querySelectorAll('.mobile-nav-link').forEach(l=> l.addEventListener('click', ()=> mobileNav.classList.remove('is-open')));
+
+  function tick(){
+    const d = new Date();
+    const s = d.toLocaleTimeString('en-GB', {timeZone:'Asia/Tehran'});
+    document.getElementById('clock').textContent = 'Tehran '+s;
+  }
+  tick(); setInterval(tick, 1000);
+
+  const langBtns = document.querySelectorAll('.lang-btn');
+  function setLang(lang){
+    currentLang = lang;
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang==='fa' ? 'rtl' : 'ltr');
+    document.body.classList.toggle('fa', lang==='fa');
+    document.querySelectorAll('[data-en]').forEach(el=>{
+      if(el.id==='heroRole') return;
+      const val = lang==='fa' ? el.getAttribute('data-fa') : el.getAttribute('data-en');
+      if(val!==null) el.textContent = val;
+    });
+    const heroRole = document.getElementById('heroRole');
+    if(heroRole.textContent){
+      typewriteInto(heroRole, lang==='fa' ? heroRole.getAttribute('data-fa') : heroRole.getAttribute('data-en'), 26);
+    }
+    langBtns.forEach(b=> b.classList.toggle('is-active', b.getAttribute('data-lang')===lang));
+  }
+  langBtns.forEach(b=> b.addEventListener('click', ()=> setLang(b.getAttribute('data-lang'))));
+</script>
+
+</body>
+</html>
